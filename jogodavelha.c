@@ -13,12 +13,12 @@ void resetaTabuleiro(char tabuleiro[3][3]) {
 //Funcao mostrar Enunciado Jogo Da Velha
 void mostraEnunciado(char enunciado[], int tam) {
 
-  printf("\t");
+  printf("\t\t\t");
   for (int i = 0; i < tam; i++) {
     printf("_");
   }
   printf("%s", enunciado);
-  printf("\t");
+  printf("\t\t\t");
   for (int i = 0; i < tam; i++) {
     printf("_");
   }
@@ -132,12 +132,10 @@ int escolherCoordenada(char tabuleiro[3][3], int jogadaDaVez,
     while(i < 1 || i > 3){
       printf("Linha: ");
       scanf("%d", &i);
-
+      while(getchar() != '\n'); //Retira buffer e outras caracteres além da primeira.  
       if(i < 1 || i > 3)
         printf("Insira um valor válido para a linha (1 a 3).\n");
     }
-    while(getchar() != '\n'); //Retira buffer e outras caracteres além da primeira.
-    
     while(col != 'A' && col != 'B' && col != 'C'){
       printf("Coluna: ");
       col = getchar();
@@ -172,8 +170,8 @@ int iniciaJogada(char tabuleiro[3][3], char caracterJogador1,
   char caracterDaVez; //Qual simbolo sera marcado na rodada
   int fimDeJogo = 0, numeroJogadas = 1;
   while (!fimDeJogo) {
-    printf("JOGADA NÚMERO %d - VEZ DO JOGADOR %d\n", numeroJogadas, decideJogada + 1);
-    printf("\nEscolha a coordenada de onde será marcado, sendo primeiro a linha (números) e depois a coluna (letras):\n");
+    printf("[ JOGADA N%d - VEZ DO JOGADOR %d ]\n", numeroJogadas, decideJogada + 1);
+    printf("\nEscolha a coordenada de onde será marcado, sendo primeiro a linha (números) e depois a coluna (letras):\n\n");
     if (decideJogada == 0){
       caracterDaVez = caracterJogador1; //Simbolo do Jogador1
       *jogadorDaVez = 1; //Esse valor retornar pelo ponteiro para informar o vencedor
@@ -204,7 +202,7 @@ int iniciaPartida(char tabuleiro[3][3], int *fim){
 
     resetaTabuleiro(tabuleiro);
 
-    char enunciado[] = "\n\n\t  JOGO DA VELHA!\n";
+    char enunciado[] = "\n\n\t\t\t      JOGO DA VELHA\n";
     int tamanhoEnunciado = strlen(enunciado);
   while (!*fim){
     mostraEnunciado(enunciado, tamanhoEnunciado);
@@ -221,12 +219,12 @@ int iniciaPartida(char tabuleiro[3][3], int *fim){
     else
       decideJogada = 0;
 
-    printf("\n! JOGADOR 1 SERÁ [%c] | JOGADOR 2 SERÁ [%c] !\n",
+    printf("\n[ JOGADOR 1 SERÁ [%c] | JOGADOR 2 SERÁ [%c] ]\n",
            caracterJogador1, caracterJogador2);
 
-    printf(">> Por sorteio, a primeira jogada será do jogador %d.\n",
+    printf("\n>> Por sorteio, a primeira jogada será do jogador %d.\n",
            decideJogada + 1);
-    for(int i = 0; i < 50; i++)
+    for(int i = 0; i < 52; i++)
       printf("_");
     printf("\n\n");
     *fim = iniciaJogada(tabuleiro, caracterJogador1, caracterJogador2, decideJogada, &jogadorVencedor);
@@ -234,32 +232,31 @@ int iniciaPartida(char tabuleiro[3][3], int *fim){
   return jogadorVencedor;
 }
 
-int verificaJogarNovamente(char tabuleiro[3][3], int *fim, int numeroJogadorVencedor){
-  int quantVencedor1 = 0, quantVencedor2 = 0; //Valores para o placar
+int verificaJogarNovamente(char tabuleiro[3][3], int *fim, int numeroJogadorVencedor, int * quantVencedor1, int * quantVencedor2){
   
-  for(int i = 0; i < 60; i++)
+  for(int i = 0; i < 55; i++)
     printf("_");
   
-  printf("\n\n\t! FIM DE JOGO !\n\n");
+  printf("\n\n\tFIM DE JOGO\n\n");
   mostraTabuleiro(tabuleiro);
   if(*fim == 2){
     printf("\nVELHA! Empate para os jogadores!\n");
     numeroJogadorVencedor = 0; //Nenhum Jogador Venceu.
   }
   else{
-    printf("☆ O Jogador %d é o vencedor! ☆\n", numeroJogadorVencedor);
+    printf("☆ ☆ O Jogador %d é o vencedor! ☆ ☆\n\n", numeroJogadorVencedor);
   }
   switch(numeroJogadorVencedor){
     case 1:
-      quantVencedor1++;
+      *quantVencedor1 += 1;
     break;
     case 2:
-      quantVencedor2++;
+      *quantVencedor2 += 1;
     break;
   }  
-  printf("PLACAR: JOGADOR 1 [%d] - JOGADOR 2 [%d]\n", quantVencedor1, quantVencedor2);
+  printf("[ PLACAR: JOGADOR 1 [%d] - JOGADOR 2 [%d] ]\n", *quantVencedor1, *quantVencedor2);
 
-  printf("Se deseja jogar novamente DIGITE 1\nSe deseja sair, digite qualquer outro valor: "); 
+  printf("*\nSe deseja jogar novamente DIGITE 1\nSe deseja sair, digite qualquer outro valor\n"); 
   scanf("%d", fim);
     while(getchar() != '\n'); //Retira buffer e outras caracteres além da   primeira.
   
@@ -272,12 +269,14 @@ int verificaJogarNovamente(char tabuleiro[3][3], int *fim, int numeroJogadorVenc
 }
 int main() {;
   char tabuleiro[3][3];
+  int quantVencedor1 = 0, quantVencedor2 = 0; //Valores para o placar
   int fim = 0; //Variavel que verifica se deu velha.
   int numeroJogadorVencedor; //Numero que será informado qual jogador venceu;
   while(!fim){
     numeroJogadorVencedor = iniciaPartida(tabuleiro, &fim);
-    fim = verificaJogarNovamente(tabuleiro, &fim, numeroJogadorVencedor);
+    fim = verificaJogarNovamente(tabuleiro, &fim, numeroJogadorVencedor, &quantVencedor1, &quantVencedor2);
   }
-  printf("Obrigado por jogar.")
+  printf("Obrigado por jogar!\nPablo G. Almeida - 1 Periodo - UFOP.");
   return 0;
 }
+/* Deve-se passar o endereço de quantVencedorX para que quando saia da funcao verificaJogarNovamente, seus valores nao resetarem */
